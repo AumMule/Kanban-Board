@@ -1,6 +1,10 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import BoardHeader from './BoardHeader'
 import Column from './Column'
+
+import { DndContext } from "@dnd-kit/core";
+
+
 const Board = () => {
 
 
@@ -10,29 +14,51 @@ const Board = () => {
         { id: "3", title: "Push to GitHub", status: "done" },
     ]);
 
-    const columnTitle = [{name:"To Do", status:"todo"}, {name:"Doing", status:"doing"}, {name:"Done", status:"done"}];
-    
+    const columnTitle = [{ name: "To Do", status: "todo" }, { name: "Doing", status: "doing" }, { name: "Done", status: "done" }];
+
     const addTask = (title: string) => {
         const newTask = { id: Date.now().toString(), title, status: "todo" };
         setTasks([...tasks, newTask]);
     }
 
-    return (
-        <div className="board w-full h-full bg-gray-100">
-            <BoardHeader addTask={addTask} />
-            <div className="p-4 bg-amber-300 h-[calc(100vh-10rem)] w-full flex gap-4 overflow-x-auto">
-                <div className='flex-1' >
-                    <Column columnTitle={columnTitle[0].name} tasks={tasks.filter(task => task.status === "todo")} />
-                </div>
-                <div className='flex-1'>
-                    <Column columnTitle={columnTitle[1].name} tasks={tasks.filter(task => task.status === "doing")} />
-                </div>
-                <div className='flex-1'>
-                    <Column columnTitle={columnTitle[2].name} tasks={tasks.filter(task => task.status === "done")} />
-                </div>
+    const handleDragEnd = (event: any) => {
+        const { active, over } = event;
 
+        if (!over) return;
+
+        const taskId = active.id;
+        const newStatus = over.id;
+
+        setTasks((prevTasks) =>
+            prevTasks.map((task) =>
+                task.id === taskId
+                    ? { ...task, status: newStatus }
+                    : task
+            )
+        );
+    };
+
+    return (
+
+        <DndContext onDragEnd={handleDragEnd}>
+            {/* Change bg-gray-100 to bg-slate-50 for a cleaner off-white base */}
+            <div className="board w-full h-full bg-slate-50">
+                <BoardHeader addTask={addTask} />
+
+                {/* Softened the background here from blue-100 to a more subtle slate or transparent blue */}
+                <div className="p-8 h-[calc(100vh-10rem)] w-full flex gap-6 overflow-x-auto">
+                    {columnTitle.map((col) => (
+                        <div key={col.status} className='flex-1 min-w-[300px]'>
+                            <Column
+                                columnTitle={col.name}
+                                status={col.status}
+                                tasks={tasks.filter(task => task.status === col.status)}
+                            />
+                        </div>
+                    ))}
+                </div>
             </div>
-        </div>
+        </DndContext>
     )
 }
 

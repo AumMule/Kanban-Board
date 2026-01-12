@@ -1,4 +1,3 @@
-import React from 'react';
 import { useState } from 'react';
 
 type BoardHeaderProps = {
@@ -6,36 +5,40 @@ type BoardHeaderProps = {
 }
 
 const BoardHeader = ({ addTask }: BoardHeaderProps) => {
+  const [title, setTitle] = useState<string>("");
 
-    const [title, setTitle] = useState<string>("");
+  const handleAdd = () => {
+    if (!title.trim()) return;
+    addTask(title);
+    setTitle("");
+  };
 
-    const handleAdd = () => {
-        if (!title.trim()) return;
-        addTask(title);
-        setTitle("");
-    };
+  return (
+    <div className="board-header w-full p-6 flex items-center justify-between bg-transparent">
+      {/* Date Section */}
+      <div className='flex flex-col'>
+        <h2 className='text-2xl font-bold text-slate-800 tracking-tight'>January</h2>
+        <p className='text-sm font-medium text-slate-500'>Monday, 12th 2026</p>
+      </div>
 
-
-    return (
-        <div className="board-header w-full h-20 bg-blue-100 p-2 flex items-center justify-center">
-            <div className="text-zinc-800 flex flex-row text-xl border-1 border-zinc-800 w-full h-full rounded-md  px-4 py-2 justify-between
-            ">
-                <div className='flex flex-col justify-center '>
-                    <h2 className='font-bold leading-4'>Month</h2>
-                    <p className='font-mono tracking-tighter'>Today is day, month date year</p>
-                </div>
-                <div>
-                    <input type="text" placeholder="Add Task..." value={title}
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setTitle(e.target.value)} className="px-4 py-2 rounded-md border border-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-600" />
-                    <button onClick={handleAdd} className="bg-zinc-800 text-white px-8 py-2 rounded-md ml-4 hover:bg-zinc-600 transition">
-                        +
-                    </button>
-                </div>
-            </div>
-
-        </div>
-
-    )
+      {/* Input Group */}
+      <div className="flex items-center bg-white p-1.5 rounded-2xl shadow-sm border border-slate-200 group focus-within:shadow-md transition-all">
+        <input 
+          type="text" 
+          placeholder="New task..." 
+          value={title}
+          onChange={(e) => setTitle(e.target.value)} 
+          className="bg-transparent px-4 py-2 w-64 outline-none text-slate-700 placeholder:text-slate-400" 
+        />
+        <button 
+          onClick={handleAdd} 
+          className="bg-slate-900 text-white h-10 px-6 rounded-xl font-bold hover:bg-indigo-600 transition-colors active:scale-95 shadow-lg shadow-slate-200"
+        >
+          Add Task
+        </button>
+      </div>
+    </div>
+  )
 }
 
 export default BoardHeader
